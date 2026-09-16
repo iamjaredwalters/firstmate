@@ -277,8 +277,22 @@ It acts on whichever server owns the `fm-remote` socket:
 `KeepAlive={SuccessfulExit=false}` lets that exit 0 rest instead of respawning against a held socket.
 The guard's header owns the decision table, and [`bin/fm-remote-herdr-owner-lib.sh`](../bin/fm-remote-herdr-owner-lib.sh) owns the birth markers it reads.
 The guard starts the server through [`bin/fm-remote-herdr-supervisor.pl`](../bin/fm-remote-herdr-supervisor.pl), which stays the launchd-supervised foreground process while the server leads its own POSIX session, because `herdr machine add` refuses a server that does not.
-It needs a `perl` on the launch agent's PATH.
-Without one, the guard runs the server directly and logs that Herdr saved SSH machines will refuse it.
+It needs a `perl` that can compile the supervisor on the launch agent's PATH, which macOS ships at `/usr/bin/perl`.
+Without one, it starts no server and stops none.
+It exits 1 with the prerequisite named in `~/Library/Logs/dev.firstmate.herdr.fm-remote.log`, so launchd retries once `perl` resolves.
+[`bin/fm-remote-herdr-owner-lib.sh`](../bin/fm-remote-herdr-owner-lib.sh) renders that launch agent contract for the doctor and for the lab in [`bin/fm-herdr-lab.sh`](../bin/fm-herdr-lab.sh), so the two cannot drift.
+
+A server the launch agent started before the supervisor existed keeps running as the launchd job itself and does not lead its own session.
+That server is all a remote second mate needs, so the doctor reports it `ok:` and names the one thing it cannot do: `herdr machine add` refuses it as a saved SSH machine until it is restarted.
+Neither updating the Firstmate code root nor `--fix` restarts a running Aqua-born server, because the restart closes every pane in the `fm-remote` session.
+The guard leaves an Aqua-born server alone whenever launchd runs it, and the readiness gate that spawn and sync run sees no gap.
+When closing those panes is acceptable, restart it yourself on that account:
+
+```sh
+herdr server stop --session fm-remote && launchctl kickstart -k gui/<uid>/dev.firstmate.herdr.fm-remote
+```
+
+The guard then starts a supervised server that leads its own session, and the parent firstmate's secondmate liveness sweep relaunches its mates into it.
 
 ### Other repairs and limits
 
@@ -314,7 +328,7 @@ A file at `~/.local/bin/fm-remote-entrypoint.sh` that is not Firstmate's own sym
 | --- | --- |
 | Always required | `git`, `jq`, `herdr`, compatible `tasks-axi`, and `treehouse` |
 | At least one of | `claude`, `codex`, `opencode`, `pi`, `pi-signed`, `grok`, or `kimi` |
-| Additionally required on macOS | `lsof`, so the doctor and guard can prove which process owns the session socket |
+| Additionally required on macOS | `lsof`, so the doctor and guard can prove which process owns the session socket, and a `perl` on the launch agent's PATH, so the guard can start the server as the leader of its own session |
 
 ## Provision a route
 
