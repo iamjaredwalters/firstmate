@@ -282,6 +282,7 @@ Without one, it starts no server and stops none.
 It exits 1 with the prerequisite named in `~/Library/Logs/dev.firstmate.herdr.fm-remote.log`, so launchd retries once `perl` resolves.
 The doctor asks the same resolved login shell, bounded, whether a `perl` on its PATH compiles the supervisor before it offers `--fix` for a server the launch agent would have to start or replace.
 When none does, that server gap is reported `human:` with the interpreter named, so the readiness gate that spawn and sync run carries the real blocker instead of recommending another `--fix`.
+A login shell that does not answer within the bound is reported the same way but as unverified, with its startup to inspect rather than a `perl` to install.
 [`bin/fm-remote-herdr-owner-lib.sh`](../bin/fm-remote-herdr-owner-lib.sh) renders that launch agent contract for the doctor and for the lab in [`bin/fm-herdr-lab.sh`](../bin/fm-herdr-lab.sh), so the two cannot drift.
 
 A server the launch agent started before the supervisor existed keeps running as the launchd job itself and does not lead its own session.
