@@ -727,6 +727,7 @@ The doctor performs these account-level checks, and they are only ever exercised
 
 So the readiness gate's behavior on a genuine Mac remains an operator-run smoke test.
 The audit-session facts the guard relies on are recorded with their commands in [runtime backend verification](verification/runtime-backends.md#fm-remote-server-birth-and-login-keychain-access).
+The session-leader shape the supervisor gives that server under real launchd, with its attach, stop, restart, and SIGKILL behavior, is recorded in [the session-leader record](verification/runtime-backends.md#session-leader-fm-remote-server-under-launchd).
 
 ### Real-host smoke test
 
