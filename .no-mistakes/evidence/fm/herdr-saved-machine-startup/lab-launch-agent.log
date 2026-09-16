@@ -1,0 +1,48 @@
+fm-remote-herdr-guard: no server owns session fm-lab-sidtest-71976-9084
+fm-remote-herdr-guard: starting the herdr server for session fm-lab-sidtest-71976-9084 as the leader of its own session under this launch agent (pid 77810)
+fm-remote-herdr-supervisor: started pid 77832 to lead its own session: /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+herdr server running; you can use any herdr CLI command in another terminal.
+api socket: /Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr.sock
+client socket: /Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr-client.sock
+logs: /Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr-server.log
+did you mean to open the Herdr TUI? run `herdr`; you do not need `herdr server`.
+fm-remote-herdr-supervisor: forwarding SIGTERM to pid 77832
+fm-remote-herdr-supervisor: pid 77832 exited with status 0
+fm-remote-herdr-guard: no server owns session fm-lab-sidtest-71976-9084
+fm-remote-herdr-guard: starting the herdr server for session fm-lab-sidtest-71976-9084 as the leader of its own session under this launch agent (pid 87935)
+fm-remote-herdr-supervisor: started pid 87955 to lead its own session: /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+herdr server running; you can use any herdr CLI command in another terminal.
+api socket: /Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr.sock
+client socket: /Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr-client.sock
+logs: /Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr-server.log
+did you mean to open the Herdr TUI? run `herdr`; you do not need `herdr server`.
+fm-remote-herdr-supervisor: pid 87955 ended by signal 9
+fm-remote-herdr-guard: no server owns session fm-lab-sidtest-71976-9084
+fm-remote-herdr-guard: starting the herdr server for session fm-lab-sidtest-71976-9084 as the leader of its own session under this launch agent (pid 89344)
+fm-remote-herdr-supervisor: started pid 89361 to lead its own session: /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+herdr server running; you can use any herdr CLI command in another terminal.
+api socket: /Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr.sock
+client socket: /Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr-client.sock
+logs: /Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr-server.log
+did you mean to open the Herdr TUI? run `herdr`; you do not need `herdr server`.
+fm-remote-herdr-supervisor: the supervisor of process group 89361 is gone; killing that group
+fm-remote-herdr-guard: no server owns session fm-lab-sidtest-71976-9084
+fm-remote-herdr-guard: starting the herdr server for session fm-lab-sidtest-71976-9084 as the leader of its own session under this launch agent (pid 92185)
+fm-remote-herdr-supervisor: started pid 92205 to lead its own session: /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+herdr server running; you can use any herdr CLI command in another terminal.
+api socket: /Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr.sock
+client socket: /Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr-client.sock
+logs: /Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr-server.log
+did you mean to open the Herdr TUI? run `herdr`; you do not need `herdr server`.
+fm-remote-herdr-supervisor: pid 92205 exited with status 0
+fm-remote-herdr-guard: session fm-lab-sidtest-71976-9084 is served by pid 1645 born outside the Aqua login session (unknown); its panes cannot reach the login keychain, taking the session over
+fm-remote-herdr-guard: session fm-lab-sidtest-71976-9084 released its socket after 0 tenths of a second
+fm-remote-herdr-guard: starting the herdr server for session fm-lab-sidtest-71976-9084 as the leader of its own session under this launch agent (pid 2050)
+fm-remote-herdr-supervisor: started pid 2184 to lead its own session: /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+herdr server running; you can use any herdr CLI command in another terminal.
+api socket: /Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr.sock
+client socket: /Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr-client.sock
+logs: /Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr-server.log
+did you mean to open the Herdr TUI? run `herdr`; you do not need `herdr server`.
+fm-remote-herdr-supervisor: forwarding SIGTERM to pid 2184
+fm-remote-herdr-supervisor: pid 2184 exited with status 0

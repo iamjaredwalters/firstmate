@@ -1,0 +1,404 @@
+
+===== 0. pre-state (host 15.7.3, herdr herdr 0.9.0, perl v5.34.1), lab session fm-lab-sidtest-71976-9084, code root /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2 @ 4286daf) [19:27:48] =====
+driver shell: pid 77682 managername=Aqua pid=77698 ppid=77697 sid=77682 managername=Aqua asid=100016 asflags=0x2030 XPC_SERVICE_NAME=0 keychain_read_exit=n/a keychain_value=n/a
+$ launchctl print gui/501/dev.firstmate.herdr
+Bad request.
+Could not find service "dev.firstmate.herdr" in domain for user gui: 501
+(dev.firstmate.herdr: rc above)
+$ launchctl print gui/501/dev.firstmate.herdr.fm-remote
+Bad request.
+Could not find service "dev.firstmate.herdr.fm-remote" in domain for user gui: 501
+(dev.firstmate.herdr.fm-remote: rc above)
+default session: {"name":"default","running":true,"socket_path":"/Users/jrad/.config/herdr/herdr.sock"}
+default server pid: 47119 
+processes matching lab before provision: []
+
+===== 1. launchagent provision fm-lab-sidtest-71976-9084 /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2 [19:27:48] =====
+$ /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-herdr-lab.sh launchagent provision fm-lab-sidtest-71976-9084 /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2
+launch agent dev.firstmate.herdr-lab.fm-lab-sidtest-71976-9084 runs lab session fm-lab-sidtest-71976-9084 (log /var/folders/r_/clp1b7jd0l32szknvsvw8b2m0000gn/T//fm-herdr-lab-501/fm-lab-sidtest-71976-9084.launchagent.log)
+rc=0
+
+===== 1a. launchctl print of the lab job (relevant lines) [19:27:50] =====
+$ bash -c launchctl print gui/501/dev.firstmate.herdr-lab.fm-lab-sidtest-71976-9084 | grep -E 'state =|pid =|last exit|terminating|program =|arguments|exit timeout|throttle|runs =|successful exit|keepalive|domain =|type =|$'
+gui/501/dev.firstmate.herdr-lab.fm-lab-sidtest-71976-9084 = {
+	active count = 1
+	path = /private/var/folders/r_/clp1b7jd0l32szknvsvw8b2m0000gn/T/fm-herdr-lab-501/fm-lab-sidtest-71976-9084.launchagent.plist
+	type = LaunchAgent
+	state = running
+
+	program = /bin/zsh
+	arguments = {
+		/bin/zsh
+		-l
+		-c
+		exec '/Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-guard.sh' '/Users/jrad/.local/bin/herdr' 'fm-lab-sidtest-71976-9084'
+	}
+
+	stdout path = /var/folders/r_/clp1b7jd0l32szknvsvw8b2m0000gn/T//fm-herdr-lab-501/fm-lab-sidtest-71976-9084.launchagent.log
+	stderr path = /var/folders/r_/clp1b7jd0l32szknvsvw8b2m0000gn/T//fm-herdr-lab-501/fm-lab-sidtest-71976-9084.launchagent.log
+	inherited environment = {
+		SSH_AUTH_SOCK => /private/tmp/com.apple.launchd.YalXMccAE3/Listeners
+	}
+
+	default environment = {
+		PATH => /usr/bin:/bin:/usr/sbin:/sbin
+	}
+
+	environment = {
+		XPC_SERVICE_NAME => dev.firstmate.herdr-lab.fm-lab-sidtest-71976-9084
+	}
+
+	domain = gui/501 [100016]
+	asid = 100016
+	minimum runtime = 10
+	exit timeout = 5
+	runs = 1
+	pid = 77810
+	immediate reason = speculative
+	forks = 8
+	execs = 4
+	initialized = 1
+	trampolined = 1
+	started suspended = 0
+	proxy started suspended = 0
+	last exit code = (never exited)
+
+	semaphores = {
+		successful exit => 0
+	}
+
+	spawn type = daemon (3)
+	jetsam priority = 40
+	jetsam memory limit (active) = (unlimited)
+	jetsam memory limit (inactive) = (unlimited)
+	jetsamproperties category = daemon
+	jetsam thread limit = 32
+	cpumon = default
+	probabilistic guard malloc policy = {
+		activation rate = 1/1000
+		sample rate = 1/0
+	}
+
+	properties = runatload | inferred program
+}
+
+===== 1b. processes of the lab session (pid ppid pgid sess stat command) [19:27:50] =====
+77810     1 77810      0 S    /usr/bin/perl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+77832 77810 77832      0 Ss   /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+77833 77832 77832      0 S    /usr/bin/perl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+
+===== 1c. Herdr capability for the lab session [19:27:50] =====
+$ bash -c HERDR_SESSION=fm-lab-sidtest-71976-9084 herdr status --json --session fm-lab-sidtest-71976-9084 | jq -c '{running: .server.running, socket: .server.socket, capabilities: .server.capabilities}'
+{"running":true,"socket":"/Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr.sock","capabilities":{"live_handoff":true,"detached_server_daemon":true,"endpoint_protocol_generation":1,"surface_interest":true,"health_check":true}}
+
+===== 2. login-keychain and audit-session probe from a pane of the lab server [19:28:08] =====
+temporary login-keychain item 'fm-lab-keychain-probe-79273' added from the driver shell (deleted at the end of this run)
+driver shell control: PROBE pid=79283 ppid=79282 sid=79273 managername=Aqua asid=100016 asflags=0x2030 XPC_SERVICE_NAME=0 keychain_read_exit=0 keychain_value=<matches>
+expected keychain value: <matches> (redacted; the pane prints the same string only if it read the login keychain)
+$ bash -c HERDR_SESSION=fm-lab-sidtest-71976-9084 herdr workspace create --cwd /tmp --no-focus --session fm-lab-sidtest-71976-9084 --json
+unknown option: --json
+pane id: 
+$ bash -c HERDR_SESSION=fm-lab-sidtest-71976-9084 herdr pane process-info --session fm-lab-sidtest-71976-9084  --json | jq -c .
+unknown option: --json
+$ bash -c HERDR_SESSION=fm-lab-sidtest-71976-9084 herdr pane run --session fm-lab-sidtest-71976-9084  python3 /Users/jrad/.no-mistakes/evidence/01M2KW29MTSTRRHEYR563AVDB2/pane-probe.py fm-lab-keychain-probe-79273
+{"error":{"code":"pane_not_found","message":"pane python3 not found"},"id":"cli:request"}
+--- pane output ---
+usage: herdr pane read <pane_id> [--source visible|recent|recent-unwrapped|detection] [--lines N] [--format text|ansi] [--ansi] [--raw]
+$ bash -c HERDR_SESSION=fm-lab-sidtest-71976-9084 herdr workspace create --cwd /tmp --no-focus --session fm-lab-sidtest-71976-9084
+{"id":"cli:workspace:create","result":{"root_pane":{"agent_status":"unknown","cwd":"/private/tmp","focused":true,"foreground_cwd":"/private/tmp","pane_id":"w1:p1","revision":0,"scroll":{"max_offset_from_bottom":0,"offset_from_bottom":0,"viewport_rows":40},"tab_id":"w1:t1","terminal_id":"term_65b906bfc292d1","workspace_id":"w1"},"tab":{"agent_status":"unknown","focused":true,"label":"1","number":1,"pane_count":1,"tab_id":"w1:t1","workspace_id":"w1"},"type":"workspace_created","workspace":{"active_tab_id":"w1:t1","agent_status":"unknown","focused":true,"label":"tmp","number":1,"pane_count":1,"tab_count":1,"workspace_id":"w1"}}}
+pane id: 
+$ bash -c HERDR_SESSION=fm-lab-sidtest-71976-9084 herdr pane process-info --pane  --session fm-lab-sidtest-71976-9084 | jq -c .
+missing value for --pane
+$ bash -c HERDR_SESSION=fm-lab-sidtest-71976-9084 herdr pane run --session fm-lab-sidtest-71976-9084  python3 /Users/jrad/.no-mistakes/evidence/01M2KW29MTSTRRHEYR563AVDB2/pane-probe.py fm-lab-keychain-probe-79273
+{"error":{"code":"pane_not_found","message":"pane python3 not found"},"id":"cli:request"}
+--- pane output (keychain value redacted) ---
+pane id: w1:p1 (root pane of workspace w1)
+$ bash -c HERDR_SESSION=fm-lab-sidtest-71976-9084 herdr pane process-info --pane w1:p1 --session fm-lab-sidtest-71976-9084 | jq -c .
+{"id":"cli:pane:process_info","result":{"process_info":{"foreground_process_group_id":81011,"foreground_processes":[{"argv":["-zsh"],"argv0":"zsh","cmdline":"-zsh","cwd":"/private/tmp","name":"zsh","pid":81011}],"pane_id":"w1:p1","shell_pid":81011},"type":"pane_process_info"}}
+$ bash -c HERDR_SESSION=fm-lab-sidtest-71976-9084 herdr pane run --session fm-lab-sidtest-71976-9084 w1:p1 python3 /Users/jrad/.no-mistakes/evidence/01M2KW29MTSTRRHEYR563AVDB2/pane-probe.py fm-lab-keychain-probe-79273
+--- pane output (keychain value redacted) ---
+--- process tree of the pane shell (pid ppid pgid sess stat command) ---
+pane shell pid from process-info: <unparsed>
+77832 77810 77832      0 Ss   /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+77833 77832 77832      0 S    /usr/bin/perl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+81011 77832 81011      0 Ss+  -zsh
+pane shell: pid 81011 (zsh), child of server 77832; probe run inside it via 'herdr pane run w1:p1 ...'
+--- pane output (keychain value redacted; it matched the item the driver shell added) ---
+
+/private/tmp
+❯ python3 /Users/jrad/.no-mistakes/evidence/01M2KW29MTSTRRHEYR563AVDB2/pane-probe.py fm-lab-keychain-probe-79273
+PROBE pid=84106 ppid=81011 sid=81011 managername=Aqua asid=100016 asflags=0x2030 XPC_SERVICE_NAME=0 keychain_read_exit=
+0 keychain_value=<matches>
+
+/private/tmp
+❯
+
+===== 3. viewer attach and detach (foreground client) must not disturb the server [19:29:14] =====
+before: job pid=77810 {"running":true,"pid":null,"detached_server_daemon":true}
+77810     1 77810      0 S    /usr/bin/perl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+77832 77810 77832      0 Ss   /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+77833 77832 77832      0 S    /usr/bin/perl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+$ /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-herdr-lab.sh viewer start fm-lab-sidtest-71976-9084
+viewer attached to fm-lab-sidtest-71976-9084 (pid 85760)
+rc=0
+attached: {"running":true,"clients":"n/a"}
+$ /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-herdr-lab.sh viewer stop fm-lab-sidtest-71976-9084
+rc=0
+after:  job pid=77810 {"running":true,"pid":null,"detached_server_daemon":true}
+77810     1 77810      0 S    /usr/bin/perl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+77832 77810 77832      0 Ss   /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+77833 77832 77832      0 S    /usr/bin/perl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+
+===== 4. ownership and birth checks against the supervised server (bin/fm-remote-herdr-owner-lib.sh) [19:29:17] =====
+$ bash -c . /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-owner-lib.sh; owner=$(fm_remote_herdr_socket_owner '/Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr.sock'); echo "socket owner pid: $owner"; birth=$(fm_remote_herdr_owner_birth "$owner"); echo "birth: $birth"; fm_remote_herdr_birth_is_aqua "$birth" && echo 'birth_is_aqua: yes' || echo 'birth_is_aqua: no'; fm_remote_herdr_process_leads_session "$owner" && echo 'leads_session: yes' || echo 'leads_session: no'; echo "XPC_SERVICE_NAME in server env: $(ps -E -o command= -p $owner | tr ' ' '\n' | grep '^XPC_SERVICE_NAME=' | head -1)"
+socket owner pid: 77832
+birth: launchd
+birth_is_aqua: yes
+leads_session: yes
+XPC_SERVICE_NAME in server env: XPC_SERVICE_NAME=dev.firstmate.herdr-lab.fm-lab-sidtest-71976-9084
+
+===== 4a. the guard run directly against an Aqua-born supervised server adopts it (exit 0, nothing restarted) [19:29:17] =====
+before: job pid=77810 server=77832
+$ /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-guard.sh /Users/jrad/.local/bin/herdr fm-lab-sidtest-71976-9084
+fm-remote-herdr-guard: session fm-lab-sidtest-71976-9084 is served by pid 77832 born in the Aqua login session (launchd); nothing to do
+guard rc=0
+after:  job pid=77810 server=77832 {"running":true,"pid":null,"detached_server_daemon":true}
+
+===== 5. launchagent restart (launchctl kickstart -k): launchd's stop signal must reach the server and a clean exit must respawn only after the throttle [19:29:31] =====
+before: state = running;runs = 1;pid = 77810;last exit code = (never exited);
+log lines before: 8
+$ /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-herdr-lab.sh launchagent restart fm-lab-sidtest-71976-9084
+rc=0
+t+1s:  state = running;runs = 2;pid = 87935;last exit code = 0;
+87935     1 87935      0 S    /usr/bin/perl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+87955 87935 87955      0 Ss   /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+87956 87955 87955      0 S    /usr/bin/perl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+t+12s: state = running;runs = 2;pid = 87935;last exit code = 0;
+87935     1 87935      0 S    /usr/bin/perl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+87955 87935 87955      0 Ss   /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+87956 87955 87955      0 S    /usr/bin/perl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+{"running":true,"pid":null,"detached_server_daemon":true}
+--- launch agent log lines since restart ---
+fm-remote-herdr-supervisor: forwarding SIGTERM to pid 77832
+fm-remote-herdr-supervisor: pid 77832 exited with status 0
+fm-remote-herdr-guard: no server owns session fm-lab-sidtest-71976-9084
+fm-remote-herdr-guard: starting the herdr server for session fm-lab-sidtest-71976-9084 as the leader of its own session under this launch agent (pid 87935)
+fm-remote-herdr-supervisor: started pid 87955 to lead its own session: /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+herdr server running; you can use any herdr CLI command in another terminal.
+api socket: /Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr.sock
+client socket: /Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr-client.sock
+logs: /Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr-server.log
+did you mean to open the Herdr TUI? run `herdr`; you do not need `herdr server`.
+
+===== 6. SIGKILL of the server (a crash) must end the job with exit 137 so KeepAlive={SuccessfulExit=false} respawns it [19:29:44] =====
+before: state = running;runs = 2;pid = 87935;last exit code = 0;
+87935     1 87935      0 S    /usr/bin/perl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+87955 87935 87955      0 Ss   /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+87956 87955 87955      0 S    /usr/bin/perl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+$ /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-herdr-lab.sh launchagent kill fm-lab-sidtest-71976-9084 server KILL
+rc=0
+t+1s:  state = running;runs = 3;pid = 89344;last exit code = 137;
+processes: [89344     1 89344      0 S    /usr/bin/perl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084;89361 89344 89361      0 Ss   /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084;89362 89361 89361      0 S    /usr/bin/perl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084;]
+t+12s: state = running;runs = 3;pid = 89344;last exit code = 137;
+89344     1 89344      0 S    /usr/bin/perl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+89361 89344 89361      0 Ss   /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+89362 89361 89361      0 S    /usr/bin/perl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+{"running":true,"pid":null,"detached_server_daemon":true}
+--- launch agent log lines since the server SIGKILL ---
+fm-remote-herdr-supervisor: pid 87955 ended by signal 9
+fm-remote-herdr-guard: no server owns session fm-lab-sidtest-71976-9084
+fm-remote-herdr-guard: starting the herdr server for session fm-lab-sidtest-71976-9084 as the leader of its own session under this launch agent (pid 89344)
+fm-remote-herdr-supervisor: started pid 89361 to lead its own session: /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+herdr server running; you can use any herdr CLI command in another terminal.
+api socket: /Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr.sock
+client socket: /Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr-client.sock
+logs: /Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr-server.log
+did you mean to open the Herdr TUI? run `herdr`; you do not need `herdr server`.
+orphan check after steps 5-6: earlier pane shell 81011 alive? no; earlier watchers 77833/87956 alive? no/no
+
+===== 7. SIGKILL of the job (the supervisor) must leave nothing orphaned: the watcher kills the server's group and its panes go with the pty [19:30:23] =====
+a pane w1:p1 with shell pid 89363 was opened in the new server so the orphan check covers panes
+before: state = running;runs = 3;pid = 89344;last exit code = 137;
+89344     1 89344      0 S    /usr/bin/perl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+89361 89344 89361      0 Ss   /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+89362 89361 89361      0 S    /usr/bin/perl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+89363 89361 89363      0 Ss+  -zsh
+$ /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-herdr-lab.sh launchagent kill fm-lab-sidtest-71976-9084 job KILL
+rc=0
+t+0.5s: state = running;runs = 4;pid = 92185;last terminating signal = Killed: 9;
+processes of the session: [92185     1 92185      0 S    /usr/bin/perl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084;92205 92185 92205      0 Ss   /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084;92206 92205 92205      0 S    /usr/bin/perl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084;]
+pane shell 89363 alive? no
+t+12s: state = running;runs = 4;pid = 92185;last terminating signal = Killed: 9;
+92185     1 92185      0 S    /usr/bin/perl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+92205 92185 92205      0 Ss   /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+92206 92205 92205      0 S    /usr/bin/perl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+{"running":true,"pid":null,"detached_server_daemon":true}
+pane shell 89363 alive? no; old job 89344 alive? no
+--- launch agent log lines since the job SIGKILL ---
+fm-remote-herdr-supervisor: the supervisor of process group 89361 is gone; killing that group
+fm-remote-herdr-guard: no server owns session fm-lab-sidtest-71976-9084
+fm-remote-herdr-guard: starting the herdr server for session fm-lab-sidtest-71976-9084 as the leader of its own session under this launch agent (pid 92185)
+fm-remote-herdr-supervisor: started pid 92205 to lead its own session: /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+herdr server running; you can use any herdr CLI command in another terminal.
+api socket: /Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr.sock
+client socket: /Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr-client.sock
+logs: /Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr-server.log
+did you mean to open the Herdr TUI? run `herdr`; you do not need `herdr server`.
+
+===== 8. a clean stop (herdr session stop through the lab guard) must rest under KeepAlive={SuccessfulExit=false}: exit 0, no respawn [19:30:37] =====
+$ /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-herdr-lab.sh stop fm-lab-sidtest-71976-9084
+{"session":{"default":false,"name":"fm-lab-sidtest-71976-9084","running":false,"session_dir":"/Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084","socket_path":"/Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr.sock"},"stopped":true}
+rc=0
+t+2s:  state = not running;runs = 4;last exit code = 0;
+processes of the session: []
+t+17s: state = not running;runs = 4;last exit code = 0;
+processes of the session: []
+{"running":false,"pid":null,"detached_server_daemon":null}
+--- launch agent log lines since the clean stop ---
+fm-remote-herdr-supervisor: pid 92205 exited with status 0
+
+===== 9. a server born outside the Aqua session (started from a shell with XPC_SERVICE_NAME unset) must be replaced by the guard on the next launch [19:31:18] =====
+foreign server started from the driver shell: pid 1645
+ 1645     1  1639      0 SN   herdr server --session fm-lab-sidtest-71976-9084
+{"running":true,"pid":null,"detached_server_daemon":false}
+$ bash -c . /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-owner-lib.sh; owner=$(fm_remote_herdr_socket_owner '/Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr.sock'); echo "socket owner pid: $owner birth: $(fm_remote_herdr_owner_birth $owner)"
+socket owner pid: 1645 birth: unknown
+job before: state = not running;runs = 4;last exit code = 0;
+$ /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-herdr-lab.sh launchagent restart fm-lab-sidtest-71976-9084
+rc=0
+t+8s: state = running;runs = 5;pid = 2050;last exit code = 0;
+ 2050     1  2050      0 S    /usr/bin/perl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+ 2184  2050  2184      0 Ss   /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+ 2185  2184  2184      0 S    /usr/bin/perl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+foreign pid 1645 alive? no
+{"running":true,"pid":null,"detached_server_daemon":true}
+$ bash -c . /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-owner-lib.sh; owner=$(fm_remote_herdr_socket_owner '/Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr.sock'); echo "socket owner pid: $owner birth: $(fm_remote_herdr_owner_birth $owner) leads_session: $(fm_remote_herdr_process_leads_session $owner && echo yes || echo no)"
+socket owner pid: 2184 birth: launchd leads_session: yes
+--- launch agent log lines since the takeover launch ---
+fm-remote-herdr-guard: session fm-lab-sidtest-71976-9084 is served by pid 1645 born outside the Aqua login session (unknown); its panes cannot reach the login keychain, taking the session over
+fm-remote-herdr-guard: session fm-lab-sidtest-71976-9084 released its socket after 0 tenths of a second
+fm-remote-herdr-guard: starting the herdr server for session fm-lab-sidtest-71976-9084 as the leader of its own session under this launch agent (pid 2050)
+fm-remote-herdr-supervisor: started pid 2184 to lead its own session: /Users/jrad/.local/bin/herdr server --session fm-lab-sidtest-71976-9084
+herdr server running; you can use any herdr CLI command in another terminal.
+api socket: /Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr.sock
+client socket: /Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr-client.sock
+logs: /Users/jrad/.config/herdr/sessions/fm-lab-sidtest-71976-9084/herdr-server.log
+did you mean to open the Herdr TUI? run `herdr`; you do not need `herdr server`.
+
+===== 10. teardown: bootout must deliver the forwarded stop, unload the label, leave no process of the session, delete the session, and leave the default session and Firstmate agents untouched [19:31:49] =====
+before: state = running;runs = 5;pid = 2050;last exit code = 0;
+$ /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-herdr-lab.sh teardown fm-lab-sidtest-71976-9084
+teardown rc=0
+label loaded after teardown? no
+processes of the session after teardown: []
+lab session still listed? 0
+default session: {"name":"default","running":true,"socket_path":"/Users/jrad/.config/herdr/herdr.sock"}
+default server pid: 47119  (was 47119 before the lab run)
+Firstmate agents: dev.firstmate.herdr loaded? no; dev.firstmate.herdr.fm-remote loaded? no (both absent before the lab run)
+lab state files left: fm-lab-sidtest-71976-9084.launchagent.log 
+--- launch agent log lines since teardown ---
+fm-remote-herdr-supervisor: forwarding SIGTERM to pid 2184
+fm-remote-herdr-supervisor: pid 2184 exited with status 0
+(full launch agent log copied to /Users/jrad/.no-mistakes/evidence/01M2KW29MTSTRRHEYR563AVDB2/lab-launch-agent.log)
+
+===== 11. perl prerequisite: the guard must start nothing and exit 1 when no perl on its PATH can run the supervisor [19:32:38] =====
+target session (never created): fm-lab-noperl-8676-29742; exists before? 0
+$ PATH=<jq,bash,coreutils only; no perl> fm-remote-herdr-guard.sh herdr fm-lab-noperl-8676-29742
+fm-remote-herdr-guard: no server owns session fm-lab-noperl-8676-29742
+fm-remote-herdr-guard: no perl on this PATH can run /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl, which the herdr server for session fm-lab-noperl-8676-29742 needs to lead its own session as Herdr saved SSH machines require; put a working perl on this account's login-shell PATH (macOS ships /usr/bin/perl); exiting 1 without starting or stopping any server so launchd retries
+guard rc= (expected 1)
+$ PATH=<same, plus a perl that fails -c> fm-remote-herdr-guard.sh herdr fm-lab-noperl-8676-29742
+fm-remote-herdr-guard: no server owns session fm-lab-noperl-8676-29742
+fm-remote-herdr-guard: no perl on this PATH can run /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl, which the herdr server for session fm-lab-noperl-8676-29742 needs to lead its own session as Herdr saved SSH machines require; put a working perl on this account's login-shell PATH (macOS ships /usr/bin/perl); exiting 1 without starting or stopping any server so launchd retries
+guard rc= (expected 1)
+session created or server started? sessions named fm-lab-noperl-8676-29742: 0; processes: []
+control: with the real PATH the same guard against a running Aqua-born server says nothing to do (step 4a), and against no server it starts one (steps 1, 5-7, 9)
+
+===== 12. bin/fm-remote-doctor.sh read-only on this Mac (fm-remote agent not installed here): the herdr-server gap must stay 'fixable' because the real login shell ($shell -l -c) compiles the supervisor with its perl [19:32:39] =====
+$ bin/fm-remote-doctor.sh   (check mode; filtered to launch-agent and herdr-server lines)
+mode=check
+platform=darwin
+check gui-session=ok: gui/501
+check launchagent=fixable: no Firstmate herdr launch agent at /Users/jrad/Library/LaunchAgents/dev.firstmate.herdr.fm-remote.plist
+check launchagent-loaded=fixable: dev.firstmate.herdr.fm-remote is not loaded into gui/501
+check herdr-server=fixable: the herdr server for session fm-remote is not running
+action: herdr-server: rerun this command with --fix to start it
+error: this host is not ready for a remote second mate; unresolved: remote-job-worker remote-job-worker-loaded remote-job-probe launchagent launchagent-loaded herdr-server
+doctor rc= (1 is expected: this Mac is not a provisioned remote host)
+
+===== 11b. (rerun with exit status captured; the earlier rc lines above were blank because the transcript helper ran under zsh) [19:33:13] =====
+[no perl on PATH]
+$ env -i HOME=/Users/jrad PATH=/var/folders/r_/clp1b7jd0l32szknvsvw8b2m0000gn/T//fm-guard-noperl.cPzSb8/noperl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-guard.sh /Users/jrad/.local/bin/herdr fm-lab-noperl-12438-1655
+fm-remote-herdr-guard: no server owns session fm-lab-noperl-12438-1655
+fm-remote-herdr-guard: no perl on this PATH can run /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl, which the herdr server for session fm-lab-noperl-12438-1655 needs to lead its own session as Herdr saved SSH machines require; put a working perl on this account's login-shell PATH (macOS ships /usr/bin/perl); exiting 1 without starting or stopping any server so launchd retries
+exit status: 1
+[a perl on PATH that fails perl -c]
+$ env -i HOME=/Users/jrad PATH=/var/folders/r_/clp1b7jd0l32szknvsvw8b2m0000gn/T//fm-guard-noperl.cPzSb8/brokenperl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-guard.sh /Users/jrad/.local/bin/herdr fm-lab-noperl-12438-1655
+fm-remote-herdr-guard: no server owns session fm-lab-noperl-12438-1655
+fm-remote-herdr-guard: no perl on this PATH can run /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-supervisor.pl, which the herdr server for session fm-lab-noperl-12438-1655 needs to lead its own session as Herdr saved SSH machines require; put a working perl on this account's login-shell PATH (macOS ships /usr/bin/perl); exiting 1 without starting or stopping any server so launchd retries
+exit status: 1
+sessions named fm-lab-noperl-12438-1655 afterwards: 0; processes: []
+
+===== 12b. doctor exit status (rerun) [19:33:13] =====
+bin/fm-remote-doctor.sh exit status: 1 (1 expected: unresolved gaps on this non-provisioned Mac)
+
+===== 13. pre-change shape (guard from base commit bdcacb9 under the same launch agent contract): an Aqua-born server that is the job itself is detected as a non-leader and left alone [19:33:28] =====
+$ /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-herdr-lab.sh launchagent provision fm-lab-oldshape-13181-18339 /var/folders/r_/clp1b7jd0l32szknvsvw8b2m0000gn/T//fm-base-root.w9ND4j
+launch agent dev.firstmate.herdr-lab.fm-lab-oldshape-13181-18339 runs lab session fm-lab-oldshape-13181-18339 (log /var/folders/r_/clp1b7jd0l32szknvsvw8b2m0000gn/T//fm-herdr-lab-501/fm-lab-oldshape-13181-18339.launchagent.log)
+exit status: 0
+job: state = running;runs = 1;pid = 13265;last exit code = (never exited);
+13265     1 13265      0 S    /Users/jrad/.local/bin/herdr server --session fm-lab-oldshape-13181-18339
+$ bash -c HERDR_SESSION=fm-lab-oldshape-13181-18339 herdr status --json --session fm-lab-oldshape-13181-18339 | jq -c '{running: .server.running, detached_server_daemon: .server.capabilities.detached_server_daemon}'
+{"running":true,"detached_server_daemon":false}
+exit status: 0
+$ bash -c . /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-owner-lib.sh; owner=$(fm_remote_herdr_socket_owner '/Users/jrad/.config/herdr/sessions/fm-lab-oldshape-13181-18339/herdr.sock'); echo "socket owner pid: $owner birth: $(fm_remote_herdr_owner_birth $owner) leads_session: $(fm_remote_herdr_process_leads_session $owner && echo yes || echo no)"
+socket owner pid: 13265 birth: launchd leads_session: no
+exit status: 0
+[the NEW guard (target commit) run directly against that old-shape server must adopt it, exit 0, and restart nothing]
+$ /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-guard.sh /Users/jrad/.local/bin/herdr fm-lab-oldshape-13181-18339
+fm-remote-herdr-guard: session fm-lab-oldshape-13181-18339 is served by pid 13265 born in the Aqua login session (launchd); nothing to do
+exit status: 0
+job after: state = running;runs = 1;pid = 13265;last exit code = (never exited); (job pid before: 13265)
+13265     1 13265      0 S    /Users/jrad/.local/bin/herdr server --session fm-lab-oldshape-13181-18339
+[teardown of the old-shape lab]
+$ /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-herdr-lab.sh teardown fm-lab-oldshape-13181-18339
+exit status: 0
+label loaded? no; processes: []; session listed: 0
+--- old-shape launch agent log ---
+fm-remote-herdr-guard: no server owns session fm-lab-oldshape-13181-18339
+fm-remote-herdr-guard: starting the herdr server for session fm-lab-oldshape-13181-18339 inside this launch agent (pid 13265)
+herdr server running; you can use any herdr CLI command in another terminal.
+api socket: /Users/jrad/.config/herdr/sessions/fm-lab-oldshape-13181-18339/herdr.sock
+client socket: /Users/jrad/.config/herdr/sessions/fm-lab-oldshape-13181-18339/herdr-client.sock
+logs: /Users/jrad/.config/herdr/sessions/fm-lab-oldshape-13181-18339/herdr-server.log
+did you mean to open the Herdr TUI? run `herdr`; you do not need `herdr server`.
+
+===== 14. guard adoption of a supervised (new-shape) server with its exit status captured, then bootout via teardown [19:33:56] =====
+$ /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-herdr-lab.sh launchagent provision fm-lab-adopt-16064-13721 /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2
+launch agent dev.firstmate.herdr-lab.fm-lab-adopt-16064-13721 runs lab session fm-lab-adopt-16064-13721 (log /var/folders/r_/clp1b7jd0l32szknvsvw8b2m0000gn/T//fm-herdr-lab-501/fm-lab-adopt-16064-13721.launchagent.log)
+exit status: 0
+job pid 16146; 16146 ppid=1 pgid=16146 stat=S;16168 ppid=16146 pgid=16168 stat=Ss;16169 ppid=16168 pgid=16168 stat=S;
+$ /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-remote-herdr-guard.sh /Users/jrad/.local/bin/herdr fm-lab-adopt-16064-13721
+fm-remote-herdr-guard: session fm-lab-adopt-16064-13721 is served by pid 16168 born in the Aqua login session (launchd); nothing to do
+exit status: 0
+job pid after guard: 16146 (unchanged = 16146); {"running":true,"detached_server_daemon":true}
+$ /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M2KW29MTSTRRHEYR563AVDB2/bin/fm-herdr-lab.sh teardown fm-lab-adopt-16064-13721
+exit status: 0
+label loaded? no; processes: []; session listed: 0; default server pid: 47119 
+--- launch agent log (new-shape adopt run) ---
+fm-remote-herdr-guard: no server owns session fm-lab-adopt-16064-13721
+fm-remote-herdr-guard: starting the herdr server for session fm-lab-adopt-16064-13721 as the leader of its own session under this launch agent (pid 16146)
+fm-remote-herdr-supervisor: started pid 16168 to lead its own session: /Users/jrad/.local/bin/herdr server --session fm-lab-adopt-16064-13721
+herdr server running; you can use any herdr CLI command in another terminal.
+api socket: /Users/jrad/.config/herdr/sessions/fm-lab-adopt-16064-13721/herdr.sock
+client socket: /Users/jrad/.config/herdr/sessions/fm-lab-adopt-16064-13721/herdr-client.sock
+logs: /Users/jrad/.config/herdr/sessions/fm-lab-adopt-16064-13721/herdr-server.log
+did you mean to open the Herdr TUI? run `herdr`; you do not need `herdr server`.
+fm-remote-herdr-supervisor: forwarding SIGTERM to pid 16168
+fm-remote-herdr-supervisor: pid 16168 exited with status 0
+
+===== 15. cleanup [19:34:06] =====
+temporary keychain item 'fm-lab-keychain-probe-79273' deleted; still present? no
+base-commit code root removed: yes
+lab launch agents still loaded: [0]; herdr sessions: ["default"]
+worktree status: 0 changed files

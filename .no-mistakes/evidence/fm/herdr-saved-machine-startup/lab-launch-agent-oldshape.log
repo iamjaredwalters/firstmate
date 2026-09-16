@@ -1,0 +1,7 @@
+fm-remote-herdr-guard: no server owns session fm-lab-oldshape-13181-18339
+fm-remote-herdr-guard: starting the herdr server for session fm-lab-oldshape-13181-18339 inside this launch agent (pid 13265)
+herdr server running; you can use any herdr CLI command in another terminal.
+api socket: /Users/jrad/.config/herdr/sessions/fm-lab-oldshape-13181-18339/herdr.sock
+client socket: /Users/jrad/.config/herdr/sessions/fm-lab-oldshape-13181-18339/herdr-client.sock
+logs: /Users/jrad/.config/herdr/sessions/fm-lab-oldshape-13181-18339/herdr-server.log
+did you mean to open the Herdr TUI? run `herdr`; you do not need `herdr server`.
