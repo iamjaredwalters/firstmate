@@ -280,6 +280,7 @@ The guard starts the server through [`bin/fm-remote-herdr-supervisor.pl`](../bin
 It needs a `perl` that can compile the supervisor on the launch agent's PATH, which macOS ships at `/usr/bin/perl`.
 Without one, it starts no server and stops none.
 It exits 1 with the prerequisite named in `~/Library/Logs/dev.firstmate.herdr.fm-remote.log`, so launchd retries once `perl` resolves.
+When the supervisor cannot fork the watcher that ends the server after an abrupt supervisor exit, it starts no server either and exits 127 with the fork error named in that log, so launchd retries.
 The doctor asks the same resolved login shell, bounded, whether a `perl` on its PATH compiles the supervisor before it offers `--fix` for a server the launch agent would have to start or replace.
 When none does, that server gap is reported `human:` with the interpreter named, so the readiness gate that spawn and sync run carries the real blocker instead of recommending another `--fix`.
 A login shell that does not answer within the bound is reported the same way but as unverified, with its startup to inspect rather than a `perl` to install.

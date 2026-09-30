@@ -372,6 +372,35 @@ HOLDER_PIDS+=("$STRAGGLER_PID")
 wait_for 20 process_gone "$STRAGGLER_PID" || fail "a process the server left in its process group outlived the server"
 pass "a process the server leaves in its process group ends with the server"
 
+# The supervisor's second fork is the watcher's. Perl's own CORE::GLOBAL::fork
+# override, loaded through PERL5OPT, fails that fork the way process
+# exhaustion would (EAGAIN); the supervisor itself carries no test seam.
+FORK_FAIL_LIB="$TMP_ROOT/perl-lib"
+mkdir -p "$FORK_FAIL_LIB"
+cat > "$FORK_FAIL_LIB/FmTestWatcherForkFails.pm" <<'PM'
+package FmTestWatcherForkFails;
+use strict;
+use warnings;
+use POSIX ();
+my $forks = 0;
+*CORE::GLOBAL::fork = sub {
+  $forks++;
+  return CORE::fork() if $forks == 1;
+  $! = POSIX::EAGAIN();
+  return undef;
+};
+1;
+PM
+EAGAIN_TEXT=$(perl -MPOSIX -e '$! = POSIX::EAGAIN(); print "$!"')
+new_case stopped
+guard PERL5LIB="$FORK_FAIL_LIB" PERL5OPT=-MFmTestWatcherForkFails
+expect_code 127 "$GUARD_RC" "the launch agent did not exit 127 for a launchd retry when the watcher could not be forked"
+assert_not_started "the server was started without the watcher that ends it after an abrupt supervisor exit"
+assert_not_contains "$(herdr_calls)" "server --session" "herdr server ran without its watcher"
+assert_contains "$GUARD_OUT" "cannot fork the watcher: $EAGAIN_TEXT" "the supervisor did not name the fork error"
+assert_contains "$GUARD_OUT" "exiting 127 without starting" "the supervisor did not say it started nothing"
+pass "when the watcher cannot be forked, no server starts and the launch agent exits non-zero for a launchd retry"
+
 BROKEN_PERL="$TMP_ROOT/broken-perl"
 mkdir -p "$BROKEN_PERL"
 printf '#!/bin/sh\nexit 2\n' > "$BROKEN_PERL/perl"
