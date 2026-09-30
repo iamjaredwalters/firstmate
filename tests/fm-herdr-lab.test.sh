@@ -811,6 +811,8 @@ test_launchagent_tripwire_protects_firstmate_launch_agents() {
   out=$(run_launchagent_fake fm_herdr_lab_teardown "$name" 2>&1) || status=$?
   expect_code 1 "$status" "a Firstmate launch agent that changed during lab work must fail teardown"
   assert_contains "$out" "LAUNCH-AGENT TRIPWIRE FAILED" "the failure did not name the launch-agent tripwire"
+  assert_contains "$out" "gui/dev.firstmate.herdr.fm-remote: recorded absent, now loaded pid=4242" \
+    "the failure did not name the changed domain with its recorded and current state"
   assert_present "$TRIPWIRES/$name.launch-agents" "the failed launch-agent tripwire discarded its evidence"
   rm -f "$FAKE_STATE/launchctl-gui-dev.firstmate.herdr.fm-remote"
   run_launchagent_fake fm_herdr_lab_teardown "$name" || fail "teardown after the Firstmate launch agent was restored failed"
@@ -818,6 +820,34 @@ test_launchagent_tripwire_protects_firstmate_launch_agents() {
   assert_absent "$TRIPWIRES/$name.fleet-state.json" "the completed teardown left the fleet-state tripwire behind"
   remove_launchagent_fakes
   pass "fm-herdr-lab: a Firstmate launch agent that changes during lab work fails teardown"
+}
+
+test_launchagent_tripwire_names_an_unrelated_restart() {
+  local name="fm-lab-agent-restart-$$" status=0 out recovery
+  install_launchagent_fakes
+  : > "$FAKE_STATE/launchctl-gui-dev.firstmate.herdr"
+  FM_FAKE_LAUNCHCTL_PID=501 run_launchagent_fake fm_herdr_lab_launchagent_provision "$name" "$ROOT" >/dev/null \
+    || fail "unrelated-restart fixture provision failed"
+  out=$(FM_FAKE_LAUNCHCTL_PID=777 run_launchagent_fake fm_herdr_lab_teardown "$name" 2>&1) || status=$?
+  expect_code 1 "$status" "a working Herdr agent that restarted during lab work must fail teardown"
+  assert_contains "$out" "gui/dev.firstmate.herdr: recorded loaded pid=501, now loaded pid=777" \
+    "the failure did not name the restarted domain with its recorded and current pid"
+  assert_not_contains "$out" "dev.firstmate.herdr.fm-remote:" "the failure named a launch agent that did not change"
+  assert_contains "$out" "restart unrelated to this lab" "the failure did not say the change may be unrelated to the lab"
+  status=0
+  run_launchagent_fake fm_herdr_lab_teardown "$name" >/dev/null 2>&1 || status=$?
+  expect_code 1 "$status" "a retried teardown must keep failing until the recovery step is taken"
+  recovery=$(printf '%s\n' "$out" \
+    | sed -n "s/^fm-herdr-lab: after confirming that agent is healthy, remove \(.*\) and rerun teardown $name\$/\1/p")
+  [ "$recovery" = "$TRIPWIRES/$name.launch-agents" ] \
+    || fail "the failure did not print a recovery step naming the recorded state file"$'\n'"--- output ---"$'\n'"$out"
+  rm -f "$recovery"
+  FM_FAKE_LAUNCHCTL_PID=777 run_launchagent_fake fm_herdr_lab_teardown "$name" \
+    || fail "teardown after following the printed recovery step failed"
+  assert_absent "$TRIPWIRES/$name.fleet-state.json" "the recovered teardown left the fleet-state tripwire behind"
+  rm -f "$FAKE_STATE/launchctl-gui-dev.firstmate.herdr"
+  remove_launchagent_fakes
+  pass "fm-herdr-lab: an unrelated working-agent restart fails teardown with a recovery step that works"
 }
 
 test_refuses_unsafe_names
@@ -843,3 +873,4 @@ test_launchagent_refuses_unowned_or_unready_targets
 test_launchagent_signals_only_its_own_job
 test_launchagent_teardown_refuses_a_loaded_label
 test_launchagent_tripwire_protects_firstmate_launch_agents
+test_launchagent_tripwire_names_an_unrelated_restart

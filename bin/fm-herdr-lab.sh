@@ -47,9 +47,12 @@
 # owns around <code-root>/bin/fm-remote-herdr-guard.sh under the one label
 # dev.firstmate.herdr-lab.<session>, keeps its plist and log in the lab state
 # directory rather than ~/Library/LaunchAgents, and bootstraps it into
-# gui/<uid>. It also records the load state of the
+# gui/<uid>. It also records the load state and pid of the
 # dev.firstmate.herdr and dev.firstmate.herdr.fm-remote launch agents, which
-# teardown requires to be identical afterward. Restart, kill, and print act
+# teardown requires to be identical afterward; a difference, which a restart
+# unrelated to the lab also causes, fails teardown with the changed domain, its
+# recorded and current pid, and the recorded file to remove before retrying
+# once the working agent is confirmed healthy. Restart, kill, and print act
 # only on a recorded lab label; kill signals the job process itself, or the
 # herdr server for the session whose parent is that job. Teardown boots the
 # recorded job out before its other steps, refuses to finish while the label
@@ -746,17 +749,37 @@ fm_herdr_lab_check_tripwire() { # <session>
   }
 }
 
+# Prints "<domain>/<label>: recorded <state>, now <state>" for each protected
+# launch agent whose line in <recorded-file> differs from <current-state>.
+fm_herdr_lab_launchagent_state_changes() { # <recorded-file> <current-state>
+  printf '%s\n' "$2" | awk -v recorded="$1" '
+    BEGIN {
+      while ((getline line < recorded) > 0) {
+        key = line
+        sub(/ .*/, "", key)
+        was[key] = substr(line, length(key) + 2)
+      }
+    }
+    {
+      now = substr($0, length($1) + 2)
+      if (was[$1] != now) printf "%s: recorded %s, now %s\n", $1, was[$1], now
+    }
+  '
+}
+
 fm_herdr_lab_verify_tripwire() { # <session>
-  local name=$1 tripwire agents before after
+  local name=$1 tripwire agents after change
   fm_herdr_lab_check_tripwire "$name" || return 1
   agents=$(fm_herdr_lab_launchagent_agents_path "$name")
   if [ -f "$agents" ]; then
-    before=$(cat "$agents")
     after=$(fm_herdr_lab_launchagent_protected_state)
-    [ "$before" = "$after" ] || {
+    [ "$(cat "$agents")" = "$after" ] || {
       fm_herdr_lab_error "LAUNCH-AGENT TRIPWIRE FAILED: a Firstmate launch agent changed during lab work"
-      fm_herdr_lab_error "before: $(printf '%s' "$before" | tr '\n' ';')"
-      fm_herdr_lab_error "after:  $(printf '%s' "$after" | tr '\n' ';')"
+      fm_herdr_lab_launchagent_state_changes "$agents" "$after" | while IFS= read -r change; do
+        fm_herdr_lab_error "$change"
+      done
+      fm_herdr_lab_error "the change may come from a restart unrelated to this lab, such as a crash, a herdr server restart, or a launchd respawn"
+      fm_herdr_lab_error "after confirming that agent is healthy, remove $agents and rerun teardown $name"
       return 1
     }
     rm -f "$agents"
