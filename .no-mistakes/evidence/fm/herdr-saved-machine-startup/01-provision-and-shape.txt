@@ -1,0 +1,23 @@
+# 2026-09-30T01:27:33Z host: Darwin 24.6.0 arm64, herdr herdr 0.9.0, perl v5.34.1, launchctl managername=Aqua
+$ bin/fm-herdr-lab.sh launchagent provision fm-lab-sessleader-50377-31697 $PWD
+launch agent dev.firstmate.herdr-lab.fm-lab-sessleader-50377-31697 runs lab session fm-lab-sessleader-50377-31697 (log /var/folders/r_/clp1b7jd0l32szknvsvw8b2m0000gn/T//fm-herdr-lab-501/fm-lab-sessleader-50377-31697.launchagent.log)
+exit=0
+
+$ bin/fm-herdr-lab.sh launchagent print fm-lab-sessleader-50377-31697  (state, pid, exit info)
+	state = running
+	program = /bin/zsh
+	arguments = {
+	domain = gui/501 [100016]
+	exit timeout = 5
+	runs = 1
+	pid = 51978
+	last exit code = (never exited)
+
+job pid = 51978
+$ ps -o pid,ppid,pgid,stat,command for the job and every process of the lab session
+51978     1 51978 S    /usr/bin/perl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M3QW4XXAS90RGGNQ5XD6XA6W/bin/fm-remote-herdr-supervisor.pl /Users/jrad/.local/bin/herdr server --session fm-lab-s
+52028 51978 52028 Ss   /Users/jrad/.local/bin/herdr server --session fm-lab-sessleader-50377-31697
+52029 52028 52028 S    /usr/bin/perl /Users/jrad/.no-mistakes/worktrees/728acd5903fe/01M3QW4XXAS90RGGNQ5XD6XA6W/bin/fm-remote-herdr-supervisor.pl /Users/jrad/.local/bin/herdr server --session fm-lab-s
+
+$ bin/fm-herdr-lab.sh run fm-lab-sessleader-50377-31697 status --json | jq '{server pid/capabilities}'
+{"running":true,"version":"0.9.0","socket":"/Users/jrad/.config/herdr/sessions/fm-lab-sessleader-50377-31697/herdr.sock","capabilities":{"live_handoff":true,"detached_server_daemon":true,"endpoint_protocol_generation":1,"surface_interest":true,"health_check":true}}

@@ -1,0 +1,77 @@
+# 2026-09-30T01:35:47Z $ bin/fm-test-run.sh tests/fm-remote-herdr-guard.test.sh tests/fm-remote-doctor.test.sh tests/fm-herdr-lab.test.sh
+FM_TEST_BEGIN 2026-09-30T01:35:47Z tests/fm-herdr-lab.test.sh family=pure-contract-unit expected_gate_skip=none
+ok - fm-herdr-lab: names fail closed and require the lab prefix
+ok - fm-herdr-lab: provisioning, scoped calls, guarded teardown, and fleet tripwire are deterministic
+ok - fm-herdr-lab: run keeps the lab session a Herdr option before any -- delimiter
+ok - fm-herdr-lab: missing tripwire refuses teardown before any Herdr call
+ok - fm-herdr-lab: changed default fleet state is a hard failure
+ok - fm-herdr-lab: an owned stopped lab can re-provision safely
+ok - fm-herdr-lab: failed deletion retains ownership until absence is confirmed
+ok - fm-herdr-lab: timed-out provisioning cancels the launch before teardown
+ok - fm-herdr-lab: the viewer attaches only to a session this lab owns
+ok - fm-herdr-lab: timed-out viewer startup cancels its exact launcher
+ok - fm-herdr-lab: startup timeout allows launcher child escalation
+ok - fm-herdr-lab: viewer start requires an identity-matched owned process
+tests/fm-herdr-lab.test.sh: line 308: 32517 Terminated: 15          "$REAL_SLEEP" 20
+ok - fm-herdr-lab: viewer stop signals only recorded processes and confirms the detach
+ok - fm-herdr-lab: viewer ownership requires the recorded parent
+ok - fm-herdr-lab: interrupted viewer start cancels its launcher
+tests/fm-herdr-lab.test.sh: line 308: 33956 Terminated: 15          "$REAL_SLEEP" 20
+ok - fm-herdr-lab: teardown refuses to destroy a session an attached viewer still holds
+ok - fm-herdr-lab: unreadable detach results fail closed on running sessions
+ok - fm-herdr-lab: the viewer launcher refuses unsafe sessions and pidfiles
+ok - fm-herdr-lab: a launch agent lab renders the fm-remote contract under its own label and boots out first on teardown
+ok - fm-herdr-lab: launch agent commands refuse loaded labels, missing guards, unowned sessions, and hosts without launchd
+ok - fm-herdr-lab: launch agent restart and kill reach only the lab job and the herdr server it runs
+ok - fm-herdr-lab: teardown refuses to finish while its lab launch agent stays loaded
+ok - fm-herdr-lab: a Firstmate launch agent that changes during lab work fails teardown
+ok - fm-herdr-lab: an unrelated working-agent restart fails teardown with a recovery step that works
+FM_TEST_END 2026-09-30T01:36:29Z tests/fm-herdr-lab.test.sh exit=0 duration_ms=41986 gate_skip=false
+FM_TEST_BEGIN 2026-09-30T01:36:29Z tests/fm-remote-doctor.test.sh family=secondmate expected_gate_skip=none
+FM_TEST_BEGIN 2026-09-30T01:36:29Z tests/fm-remote-herdr-guard.test.sh family=secondmate expected_gate_skip=none
+ok - holder processes expose their environment to the owner library
+ok - an empty session is started inside the launch agent
+ok - the server leads its own session as the child of the process launchd supervises
+ok - the launch agent exits with the server's own status or signal, so launchd still tells a clean stop from a crash
+ok - signals sent to the process launchd supervises reach the server
+ok - a SIGKILLed launch agent process leaves no server or watcher behind
+ok - a process the server leaves in its process group ends with the server
+ok - without a perl that can run the supervisor, an empty session gets no server and the guard names the prerequisite for a launchd retry
+ok - launchd and worker markers require gui-domain launchctl proof
+ok - a gui-domain launchd job proves the server it supervises, and only that server
+ok - without a perl that can run the supervisor, an Aqua-born owner is left alone and a foreign one is not stopped
+ok - background, inherited-XPC, SSH-born, SSH-descended, and unprovable owners are taken over
+ok - a running session with no provable owner is taken over rather than trusted
+ok - a host without lsof cannot prove an Aqua birth, so the session is taken over
+ok - a foreign server that never releases the socket yields exit 1 so launchd retries
+ok - the guard starts as soon as the foreign server releases the socket
+ok - argument errors are refused before any herdr call
+FM_TEST_END 2026-09-30T01:36:38Z tests/fm-remote-herdr-guard.test.sh exit=0 duration_ms=8014 gate_skip=false
+ok - a missing herdr CLI is a human gap that --fix never claims to close
+ok - an absent launch agent is a fixable gap and the read-only run changes nothing
+ok - --fix installs the dedicated fm-remote launch agent without touching default
+ok - --fix is idempotent once the host is ready
+ok - a loaded and running launch agent must match the complete owned contract
+ok - a failed reload leaves stale effective launch-agent state unready
+ok - a launch agent outside the Aqua session scope is rewritten in place
+ok - launchd failures are reported and delayed server readiness is awaited
+ok - session leadership is reported on an Aqua-born owner without changing its readiness, and the restart that would give it one is named, never applied
+ok - a session served outside the Aqua login session is fixable and --fix retakes it through launchd
+ok - human gaps are reported with their operator step and never claimed as fixed
+ok - a login shell without a perl that compiles the supervisor is a human gap the readiness gate preserves, a stalled one is an unverified gap, and --fix never loops on either
+ok - a bash Directory Services login shell is rendered with -l -c
+ok - custom Directory Services shell paths remain valid plist arguments
+ok - shell resolution bounds Directory Services and uses executable SHELL and POSIX fallbacks
+ok - repeated repair reuses one resolved login shell and remains a no-op
+ok - a non-darwin host skips launch agents and starts its herdr server directly
+ok - --fix creates only owned version-manager wrappers and never clobbers an operator file
+ok - doctor refreshes stale worker identity before probing tools
+ok - the entrypoint symlink is recreated when absent and never overwritten when operator-owned
+FM_TEST_END 2026-09-30T01:37:14Z tests/fm-remote-doctor.test.sh exit=0 duration_ms=44404 gate_skip=false
+FM_TEST_SUMMARY total=3 failed=0 skipped_gate=0 duration_ms=86792
+FM_TEST_SUMMARY_FAMILY family=pure-contract-unit count=1 duration_ms=41986 failed=0
+FM_TEST_SUMMARY_FAMILY family=secondmate count=2 duration_ms=52418 failed=0
+FM_TEST_SLOWEST rank=1 script=tests/fm-remote-doctor.test.sh duration_ms=44404
+FM_TEST_SLOWEST rank=2 script=tests/fm-herdr-lab.test.sh duration_ms=41986
+FM_TEST_SLOWEST rank=3 script=tests/fm-remote-herdr-guard.test.sh duration_ms=8014
+exit=0

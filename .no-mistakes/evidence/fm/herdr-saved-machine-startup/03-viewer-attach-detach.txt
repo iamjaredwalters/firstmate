@@ -1,0 +1,9 @@
+# 2026-09-30T01:28:25Z a client attaches and detaches without disturbing the supervised server
+before attach: job pid=51978 server=pid 52028 ppid 51978 stat Ss detached_server_daemon=true foreground_reason=no_foreground_client
+$ bin/fm-herdr-lab.sh viewer start fm-lab-sessleader-50377-31697
+viewer attached to fm-lab-sessleader-50377-31697 (pid 57142)
+exit=0
+while attached: job pid=51978 server=pid 52028 ppid 51978 stat Ss detached_server_daemon=true foreground_reason=cleared
+$ bin/fm-herdr-lab.sh viewer stop fm-lab-sessleader-50377-31697
+exit=0
+after detach:  job pid=51978 server=pid 52028 ppid 51978 stat Ss detached_server_daemon=true foreground_reason=no_foreground_client

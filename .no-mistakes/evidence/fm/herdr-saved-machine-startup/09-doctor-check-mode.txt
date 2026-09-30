@@ -1,0 +1,12 @@
+# 2026-09-30T01:38:24Z read-only doctor run (check mode, no --fix) on this Mac, which has no fm-remote launch agent: the darwin perl probe must pass on the real login shell so the missing server stays a fixable gap, not an interpreter gap
+$ bin/fm-remote-doctor.sh   (filtered to platform, launch agent, and herdr-server lines)
+mode=check
+platform=darwin
+check gui-session=ok: gui/501
+check launchagent=fixable: no Firstmate herdr launch agent at /Users/jrad/Library/LaunchAgents/dev.firstmate.herdr.fm-remote.plist
+check launchagent-loaded=fixable: dev.firstmate.herdr.fm-remote is not loaded into gui/501
+check herdr-server=fixable: the herdr server for session fm-remote is not running
+action: launchagent: rerun this command with --fix to install it
+action: launchagent-loaded: rerun this command with --fix to bootstrap and start it
+action: herdr-server: rerun this command with --fix to start it
+doctor exit=1 (non-zero while fixable gaps remain, by its line-protocol contract); elapsed=0.3s; herdr-server line names no perl gap, so the bounded login-shell probe passed

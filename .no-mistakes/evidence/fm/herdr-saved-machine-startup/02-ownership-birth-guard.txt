@@ -1,0 +1,25 @@
+# 2026-09-30T01:28:06Z ownership, birth, session-leader, and guard adoption checks on the live lab server
+socket = /Users/jrad/.config/herdr/sessions/fm-lab-sessleader-50377-31697/herdr.sock
+fm_remote_herdr_socket_owner -> pid 52028 (rc=0)
+fm_remote_herdr_owner_birth 52028 -> launchd
+fm_remote_herdr_process_leads_session 52028 -> yes (ps stat=Ss)
+launchd job pid = 51978 ; server ppid = 51978
+server environment markers (ps -Eww): XPC_SERVICE_NAME=dev.firstmate.herdr-lab.fm-lab-sessleader-50377-31697 
+supervisor (job) environment markers: 
+
+$ launchctl procinfo 52028 (audit session / domain lines)
+
+$ bin/fm-remote-herdr-guard.sh /Users/jrad/.local/bin/herdr fm-lab-sessleader-50377-31697   (a second guard run from a shell: must adopt, not replace)
+fm-remote-herdr-guard: session fm-lab-sessleader-50377-31697 is served by pid 52028 born in the Aqua login session (launchd); nothing to do
+guard exit=0
+server pid after guard run: 52028 (unchanged from 52028: yes)
+
+$ launch agent log so far
+fm-remote-herdr-guard: no server owns session fm-lab-sessleader-50377-31697
+fm-remote-herdr-guard: starting the herdr server for session fm-lab-sessleader-50377-31697 as the leader of its own session under this launch agent (pid 51978)
+fm-remote-herdr-supervisor: started pid 52028 to lead its own session: /Users/jrad/.local/bin/herdr server --session fm-lab-sessleader-50377-31697
+herdr server running; you can use any herdr CLI command in another terminal.
+api socket: /Users/jrad/.config/herdr/sessions/fm-lab-sessleader-50377-31697/herdr.sock
+client socket: /Users/jrad/.config/herdr/sessions/fm-lab-sessleader-50377-31697/herdr-client.sock
+logs: /Users/jrad/.config/herdr/sessions/fm-lab-sessleader-50377-31697/herdr-server.log
+did you mean to open the Herdr TUI? run `herdr`; you do not need `herdr server`.

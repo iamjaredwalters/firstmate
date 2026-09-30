@@ -1,0 +1,91 @@
+# 2026-09-30T01:30:54Z stop, restart, crash, and SIGKILL behaviour of the supervised lab server under real launchd (label dev.firstmate.herdr-lab.fm-lab-sessleader-50377-31697)
+job before: state = running;runs = 1;pid = 51978;last exit code = (never exited);
+51978     1 51978 S    /usr/bin/perl fm-remote-herdr-supervisor.pl herdr server --session fm-lab-sessleader-50377-31697
+52028 51978 52028 Ss   herdr server --session fm-lab-sessleader-50377-31697
+52029 52028 52028 S    /usr/bin/perl fm-remote-herdr-supervisor.pl herdr server --session fm-lab-sessleader-50377-31697
+  env-tagged pid 52028: /Users/jrad/.local/bin/herdr
+
+== A. launchagent restart (launchctl kickstart -k: launchd's SIGTERM must reach the server through the supervisor, then a new generation starts) ==
+$ bin/fm-herdr-lab.sh launchagent restart fm-lab-sessleader-50377-31697
+exit=0
+job 1s later: state = running;runs = 2;pid = 82960;last exit code = 0;
+running again after ~0s
+job now: state = running;runs = 2;pid = 82960;last exit code = 0;
+82960     1 82960 S    /usr/bin/perl fm-remote-herdr-supervisor.pl herdr server --session fm-lab-sessleader-50377-31697
+82978 82960 82978 Ss   herdr server --session fm-lab-sessleader-50377-31697
+82979 82978 82978 S    /usr/bin/perl fm-remote-herdr-supervisor.pl herdr server --session fm-lab-sessleader-50377-31697
+  env-tagged pid 82978: /Users/jrad/.local/bin/herdr
+  new log lines:
+    fm-remote-herdr-supervisor: forwarding SIGTERM to pid 52028
+    fm-remote-herdr-supervisor: pid 52028 exited with status 0
+    fm-remote-herdr-guard: no server owns session fm-lab-sessleader-50377-31697
+    fm-remote-herdr-guard: starting the herdr server for session fm-lab-sessleader-50377-31697 as the leader of its own session under this launch agent (pid 82960)
+    fm-remote-herdr-supervisor: started pid 82978 to lead its own session: /Users/jrad/.local/bin/herdr server --session fm-lab-sessleader-50377-31697
+  old server pid 52028 alive? no
+
+== B. launchagent kill job TERM (launchctl kill SIGTERM on the job: forwarded, clean exit 0, and with KeepAlive SuccessfulExit=false the job rests instead of respawning) ==
+$ bin/fm-herdr-lab.sh launchagent kill fm-lab-sessleader-50377-31697 job TERM
+exit=0
+job 3s later: state = not running;runs = 2;last exit code = 0;
+job 15s later: state = not running;runs = 2;last exit code = 0; running=false
+  new log lines:
+    fm-remote-herdr-supervisor: forwarding SIGTERM to pid 82978
+    fm-remote-herdr-supervisor: pid 82978 exited with status 0
+
+== C. launchagent restart to bring a generation back, then a guarded clean stop (bin/fm-herdr-lab.sh stop) ==
+$ bin/fm-herdr-lab.sh launchagent restart fm-lab-sessleader-50377-31697
+running again after ~1s
+job: state = running;runs = 3;pid = 84043;last exit code = 0;
+$ bin/fm-herdr-lab.sh stop fm-lab-sessleader-50377-31697
+{"session":{"default":false,"name":"fm-lab-sessleader-50377-31697","running":false,"session_dir":"/Users/jrad/.config/herdr/sessions/fm-lab-sessleader-50377-31697","socket_path":"/Users/jrad/.config/herdr/sessions/fm-lab-sessleader-50377-31697/herdr.sock"},"stopped":true}
+
+exit=0
+job 3s later: state = not running;runs = 3;last exit code = 0;
+job 15s later: state = not running;runs = 3;last exit code = 0; running=false
+  new log lines:
+    fm-remote-herdr-supervisor: pid 84068 exited with status 0
+
+== D. restart, then SIGKILL the server itself (a crash: supervisor must exit 137 so launchd respawns) ==
+$ bin/fm-herdr-lab.sh launchagent restart fm-lab-sessleader-50377-31697
+running again after ~1s
+job: state = running;runs = 4;pid = 85137;last exit code = 0;
+85137     1 85137 S    /usr/bin/perl fm-remote-herdr-supervisor.pl herdr server --session fm-lab-sessleader-50377-31697
+85162 85137 85162 Ss   herdr server --session fm-lab-sessleader-50377-31697
+85163 85162 85162 S    /usr/bin/perl fm-remote-herdr-supervisor.pl herdr server --session fm-lab-sessleader-50377-31697
+  env-tagged pid 85162: /Users/jrad/.local/bin/herdr
+$ bin/fm-herdr-lab.sh launchagent kill fm-lab-sessleader-50377-31697 server KILL
+exit=0
+job 2s later: state = spawn scheduled;runs = 4;last exit code = 137;
+  leftover processes right after the crash:
+running again after ~6s
+job now: state = running;runs = 5;pid = 85787;last exit code = 137;
+85787     1 85787 S    /usr/bin/perl fm-remote-herdr-supervisor.pl herdr server --session fm-lab-sessleader-50377-31697
+85804 85787 85804 Ss   herdr server --session fm-lab-sessleader-50377-31697
+85805 85804 85804 S    /usr/bin/perl fm-remote-herdr-supervisor.pl herdr server --session fm-lab-sessleader-50377-31697
+  env-tagged pid 85804: /Users/jrad/.local/bin/herdr
+  new log lines:
+    fm-remote-herdr-supervisor: pid 85162 ended by signal 9
+    fm-remote-herdr-guard: no server owns session fm-lab-sessleader-50377-31697
+    fm-remote-herdr-guard: starting the herdr server for session fm-lab-sessleader-50377-31697 as the leader of its own session under this launch agent (pid 85787)
+    fm-remote-herdr-supervisor: started pid 85804 to lead its own session: /Users/jrad/.local/bin/herdr server --session fm-lab-sessleader-50377-31697
+
+== E. SIGKILL the launchd job (the supervisor) itself: the watcher must kill the server's process group at once, nothing orphaned, launchd respawns ==
+server before: pid 85804
+$ bin/fm-herdr-lab.sh launchagent kill fm-lab-sessleader-50377-31697 job KILL
+exit=0
+job 1s later: state = spawn scheduled;runs = 5;last terminating signal = Killed: 9;
+  server pid 85804 alive 1s after the job was SIGKILLed? no
+  leftover processes 1s after:
+running again after ~8s
+job now: state = running;runs = 6;pid = 88372;last terminating signal = Killed: 9;
+88372     1 88372 S    /usr/bin/perl fm-remote-herdr-supervisor.pl herdr server --session fm-lab-sessleader-50377-31697
+88445 88372 88445 Ss   herdr server --session fm-lab-sessleader-50377-31697
+88446 88445 88445 S    /usr/bin/perl fm-remote-herdr-supervisor.pl herdr server --session fm-lab-sessleader-50377-31697
+  env-tagged pid 88445: /Users/jrad/.local/bin/herdr
+  new log lines:
+    fm-remote-herdr-supervisor: the supervisor of process group 85804 is gone; killing that group
+    fm-remote-herdr-guard: no server owns session fm-lab-sessleader-50377-31697
+    fm-remote-herdr-guard: starting the herdr server for session fm-lab-sessleader-50377-31697 as the leader of its own session under this launch agent (pid 88372)
+    fm-remote-herdr-supervisor: started pid 88445 to lead its own session: /Users/jrad/.local/bin/herdr server --session fm-lab-sessleader-50377-31697
+
+final capability: detached_server_daemon=true

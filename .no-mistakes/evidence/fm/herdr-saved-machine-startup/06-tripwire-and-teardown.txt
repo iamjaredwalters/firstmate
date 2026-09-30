@@ -1,0 +1,32 @@
+# 2026-09-30T01:33:21Z teardown, with the launch-agent tripwire first tripped the way an unrelated restart of a protected agent would trip it
+recorded protected-agent state (/var/folders/r_/clp1b7jd0l32szknvsvw8b2m0000gn/T//fm-herdr-lab-501/fm-lab-sessleader-50377-31697.launch-agents):
+    gui/dev.firstmate.herdr absent
+    user/dev.firstmate.herdr absent
+    gui/dev.firstmate.herdr.fm-remote absent
+    user/dev.firstmate.herdr.fm-remote absent
+current default-session snapshot: {"name":"default","default":true,"running":true,"socket_path":"/Users/jrad/.config/herdr/herdr.sock"}
+default server pid before: 47119
+
+== simulate a protected agent that restarted for reasons unrelated to the lab: rewrite its recorded line to a pid launchd no longer reports ==
+recorded now:
+    gui/dev.firstmate.herdr loaded pid=4242
+    user/dev.firstmate.herdr absent
+    gui/dev.firstmate.herdr.fm-remote absent
+    user/dev.firstmate.herdr.fm-remote absent
+$ bin/fm-herdr-lab.sh teardown fm-lab-sessleader-50377-31697
+fm-herdr-lab: LAUNCH-AGENT TRIPWIRE FAILED: a Firstmate launch agent changed during lab work
+fm-herdr-lab: gui/dev.firstmate.herdr: recorded loaded pid=4242, now absent
+fm-herdr-lab: the change may come from a restart unrelated to this lab, such as a crash, a herdr server restart, or a launchd respawn
+fm-herdr-lab: after confirming that agent is healthy, remove /var/folders/r_/clp1b7jd0l32szknvsvw8b2m0000gn/T//fm-herdr-lab-501/fm-lab-sessleader-50377-31697.launch-agents and rerun teardown fm-lab-sessleader-50377-31697
+exit=1
+label still loaded? no ; lab session still listed? 0
+
+== follow the printed recovery step, then tear down again ==
+$ rm /var/folders/r_/clp1b7jd0l32szknvsvw8b2m0000gn/T//fm-herdr-lab-501/fm-lab-sessleader-50377-31697.launch-agents
+$ bin/fm-herdr-lab.sh teardown fm-lab-sessleader-50377-31697
+exit=0
+
+after teardown: label loaded? no; processes of the lab session: []; lab session listed? 0; lab state files left: [fm-lab-sessleader-50377-31697.launchagent.log ]
+default-session snapshot after: {"name":"default","default":true,"running":true,"socket_path":"/Users/jrad/.config/herdr/herdr.sock"}
+default server pid after: 47119
+protected agents after: gui/dev.firstmate.herdr absent; user/dev.firstmate.herdr absent; gui/dev.firstmate.herdr.fm-remote absent; user/dev.firstmate.herdr.fm-remote absent; 

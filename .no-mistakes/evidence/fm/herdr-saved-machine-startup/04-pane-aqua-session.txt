@@ -1,0 +1,19 @@
+# 2026-09-30T01:29:33Z a pane of the supervised lab server runs inside the Aqua login session (launchctl managername), compared with the operator's own Aqua terminal
+operator terminal: launchctl managername -> Aqua
+$ bin/fm-herdr-lab.sh run fm-lab-sessleader-50377-31697 pane run w1:p1 'echo FM-PANE-PROBE; launchctl managername; ...'
+
+{"id":"cli:pane:wait-output","result":{"matched_line":"~   echo FM-PANE-PROBE-BEGIN; echo \"managername=$(launchctl managername)\"; echo \"pane shell: $(ps -o pid=,ppid=,pgid=,stat= -p $$)\"; echo \"XPC_SERVICE_NAME=$XPC_SERVICE_NAME SSH_CONNECTION=${SSH_CONNECTION:-<unset>}\"; echo FM-PANE-PROBE-EN
+$ bin/fm-herdr-lab.sh run fm-lab-sessleader-50377-31697 pane read w1:p1 --lines 12
+
+$ bin/fm-herdr-lab.sh run fm-lab-sessleader-50377-31697 pane read w1:p1 --lines 20 --source recent-unwrapped
+
+~   echo FM-PANE-PROBE-BEGIN; echo "managername=$(launchctl managername)"; echo "pane shell: $(ps -o pid=,ppid=,pgid=,stat= -p $$)"; echo "XPC_SERVICE_NAME=$XPC_SERVICE_NAME SSH_CONNECTION=${SSH_CONNECTION:-<unset>}"; echo FM-PANE-PROBE-END
+FM-PANE-PROBE-BEGIN
+managername=Aqua
+pane shell: 57212 52028 57212 Ss+
+XPC_SERVICE_NAME=dev.firstmate.herdr-lab.fm-lab-sessleader-50377-31697 SSH_CONNECTION=<unset>
+FM-PANE-PROBE-END
+
+~
+❯
+(pane shell pid 57212 has ppid 52028 = the supervised server; managername=Aqua matches the operator terminal; XPC_SERVICE_NAME carries the launch agent label; no SSH markers)
